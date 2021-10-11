@@ -5,48 +5,28 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+require "csv"
 
-Faker::Name.unique.clear # Clears used values for Faker::Name
-Faker::UniqueGenerator.clear # Clears used values for all generators
+Product.destroy_all
+Category.destroy_all
 
-76.times do
-  Product.create(title:          Faker::Commerce.product_name,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
-end
+csv_file = Rails.root.join("db/products.csv")
+csv_data = File.read(csv_file)
 
-100.times do
-  Product.create(title:          Faker::Beer.name,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
-end
+products = CSV.parse(csv_data, headers: true, encoding: "utf-8")
 
-100.times do
-  Product.create(title:          Faker::Coffee.blend_name,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
-end
+products.each do |p|
+  category = Category.find_or_create_by(name: p["category"])
 
-100.times do
-  Product.create(title:          Faker::Dessert.variety,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
-end
-
-100.times do
-  Product.create(title:          Faker::Food.dish,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
-end
-
-100.times do
-  Product.create(title:          Faker::Music.instrument,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
-end
-
-100.times do
-  Product.create(title:          Faker::Books::CultureSeries.book,
-                 price:          Faker::Commerce.price,
-                 stock_quantity: Faker::Number.number)
+  if category&.valid?
+    product = category.products.create(
+      title:          p["name"],
+      price:          p["price"],
+      description:    p["description"],
+      stock_quantity: p["stock quantity"]
+    )
+    puts "Invalid product #{p['name']}" unless product&.valid?
+  else
+    puts "Invalid Category: #{p['category']} for product: #{p['name']}"
+  end
 end
