@@ -1,6 +1,26 @@
 <h1>Products#index</h1>
-<ul>
-  <% @products.each do | product | %>
-  <li> <%= link_to product.title, product %> </li>
-  <% end %>
-</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Product Name</th>
+      <th>Category</th>
+      <th>Price</th>
+      <th>Description</th>
+      <th>Stock Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |p| %>
+      <tr>
+        <td><%= link_to p.title, p %></td>
+        <td><%= p.category.name %></td>
+        <td><%= p.price %></td>
+        <td><%= p.description %></td>
+        <td><%= p.stock_quantity %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
